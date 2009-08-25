@@ -1,0 +1,67 @@
+Author:: Jared Kuolt (mailto:me@superjared.com)
+Copyright:: Copyright (c) 2009 Jared Kuolt
+License:: MIT License
+
+= Pedant
+
+Enforce return values by type and with user-defined guards.
+
+== Installation
+
+  sudo gem install pedant
+  
+== Usage
+
+In defining your classes, you can define allowable return values for your 
+methods by type and with user-defined guards. See how the +returns+ method is
+used in the following class definition:
+
+  require 'rubygems'
+  require 'pedant'
+  
+  Object.send :include, Pedant::Returns
+  
+  class Foo
+    def integer_only
+      100
+    end
+    # We define that the method may *only* return an Integer
+    returns(:integer_only, Integer)
+    
+    def integer_or_nil
+      nil
+    end
+    # This method can return either an Integer or NilClass
+    returns(:integer_or_nil, Integer, NilClass)
+    
+    def small_integer
+      10
+    end
+    # This method will raise unless it returns an Integer less than 127
+    returns(:small_integer, Integer) {|return_value| return_value < 127 }
+    
+    # We can do the same for class methods
+    class << self
+      def string_or_symbol
+        :foo
+      end
+      returns(:string_or_symbol, String, Symbol)
+    end
+  end
+
+
+If the type doesn't match, <tt>Pedant::TypeError</tt> will be raised. If the 
+user guard does not evaluate to true, <tt>Pedant::GuardError</tt> will be 
+raised.
+
+Because this code can be destructive, especially in production, it is advised 
+to use Pedant in development and staging environments. To do this, include 
+<tt>Pedant::Dummy</tt> instead of <tt>Pedant::Returns</tt>. 
+<tt>Pedant::Dummy</tt> defines the returns method to do nothing and will no 
+longer get in the way:
+
+  if environment == :production
+    Object.send :include, Pedant::Dummy
+  else
+    Object.send :include, Pedant::Returns
+  end
