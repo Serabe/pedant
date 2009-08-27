@@ -1,8 +1,6 @@
 require 'test/unit'
 require File.join(File.dirname(__FILE__), '../lib/pedant')
 
-Object.send :include, Pedant::Returns
-
 class ReturnsTest < Test::Unit::TestCase
   def setup
     @foo = Foo.new
@@ -27,6 +25,7 @@ end
 
 
 class Foo
+  include Pedant::Returns
   def should_fail
     :should_fail
   end

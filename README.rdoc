@@ -19,9 +19,10 @@ used in the following class definition:
   require 'rubygems'
   require 'pedant'
   
-  Object.send :include, Pedant::Returns
-  
   class Foo
+
+    include Pedant::Returns
+
     def integer_only
       100
     end
@@ -61,7 +62,7 @@ to use Pedant in development and staging environments. To do this, include
 longer get in the way:
 
   if environment == :production
-    Object.send :include, Pedant::Dummy
+    include Pedant::Dummy
   else
-    Object.send :include, Pedant::Returns
+    include Pedant::Returns
   end
